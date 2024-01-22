@@ -2,6 +2,37 @@
     padding: 50px;
 }
 
-.about-blue{
-    background-color: blue;
+.about-sub-content{
+    display: inline-block;
+    padding-top: 20px;
+}
+
+
+.about-image{
+    width: 100%;
+    border:2px;
+    border-color: black;
+    border-style: solid;
+    border-radius: 25%;
+}
+
+.about-sub-text{
+    font-size: 1.5em;
+    justify-self: center;
+    align-self: center;
+}
+
+.about-sub-div1{
+    float: left;
+    width: 47%;
+    height: 500px;
+}
+
+.about-sub-div2{
+    display:flex;
+    justify-content:center;
+    align-content: center;
+    float: right;
+    width: 47%;
+    height: 500px;
 }
