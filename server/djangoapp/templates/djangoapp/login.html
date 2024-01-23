@@ -63,23 +63,21 @@
             </div>
         </nav>
         <!--Add content here-->
-        <div class="contact-content">
-            <h2><u>Contact Us</u></h2>
-            <h3>Thank you for your interst in our products! See below for the best ways to reach us!</h3>
-            <div class="contact-sub-content">
-                <div class="contact-sub-div1">
-                    <img  class="contact-image" src="https://www.svgrepo.com/show/5236/phone-call.svg">
+        <form action="{% url 'djangoapp:login' %}" method="post">
+            {% csrf_token %}
+            <div class="container">
+                <h1>Login</h1>
+                <div class="form-group">
+                    <label for="username"><b>Username</b></label>
+                    <input id="username" class="form-control" type="text" placeholder="Username" name="username" required>
+                    <label for="psw"><b>Password</b></label>
+                    <input id="psw" class="form-control" type="password" placeholder="Password" name="psw" required>
                 </div>
-                <div class="contact-sub-div2">
-                    <p class="contact-sub-text">Phone: +1 (123) 456-7890</p>
-                </div>
-                <div class="contact-sub-div1">
-                    <img  class="contact-image" src="https://media.istockphoto.com/id/935695192/vector/office-building-outline-icon-pixel-perfect.jpg?s=612x612&w=0&k=20&c=41E9QLEcn04iTn5-_X55u-9lkV08pth5WwCib9cWEyc=">
-                </div>
-                <div class="contact-sub-div2">
-                    <p class="contact-sub-text">Address: 123 Main Lane, Mainsville, PA 19104</p>
-                </div>
+                {% if message %}
+                <div class="alert alert-warning">{{message}}</div>
+                {% endif %}
+                <button class="btn btn-primary" type="submit">Login</button>
             </div>
-        </div>
+        </form>
     </body>
 </html>
