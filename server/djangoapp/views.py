@@ -85,7 +85,7 @@ def get_dealer_details(request, dealerId):
         #Getting reivews from the url and dealerid
         reviews = get_dealer_reviews_from_cf(url, dealerId)
         #Concat reviews
-        dealer_reviews = ' '.join([dealer.review for dealer in reviews])
+        dealer_reviews = ' '.join([dealer.review + ":" + dealer.sentiment for dealer in reviews])
         #Returning List
         return HttpResponse(dealer_reviews)
 
