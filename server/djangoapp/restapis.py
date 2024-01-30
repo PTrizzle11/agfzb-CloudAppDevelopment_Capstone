@@ -108,3 +108,16 @@ def analyze_review_sentiments(text):
     print(response)
     return response
     
+def post_request(url, json_payload, **kwargs):
+    print(kwargs)
+    print(json_payload)
+    print("POST from {} ".format(url))
+    try:
+        response = requests.post(url, json=json_payload['review'])
+    except:
+        print("Network Exception Occured")
+
+    status_code = response.status_code
+    print("With status {} ".format(status_code))
+    json_data = json.loads(response.text)
+    return json_data

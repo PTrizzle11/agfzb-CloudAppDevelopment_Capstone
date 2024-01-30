@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .restapis import get_request, get_dealers_from_cf, get_dealer_reviews_from_cf
+from .restapis import get_request, get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -33,7 +33,7 @@ def login_request(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('djangoapp:home')
+            return redirect('djangoapp:index')
         else:
             return render(request, 'djangoapp/login.html', context)
     else:
@@ -43,7 +43,7 @@ def login_request(request):
 def logout_request(request):
     print("Logout the user '{}'".format(request.user.username))
     logout(request)
-    return redirect('djangoapp:home')
+    return redirect('djangoapp:index')
 
 # Create a `registration_request` view to handle sign up request
 def registration_request(request):
@@ -64,14 +64,14 @@ def registration_request(request):
         if not user_exist:
             user = User.objects.create_user(username=username, password=password, first_name=firstname, last_name=lastname)
             login(request, user)
-            return redirect('djangoapp:home')
+            return redirect('djangoapp:index')
         else:
             return render(request, 'djangoapp/registration.html', context)
 
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
     if request.method == "GET":
-        url = "https://patrickjodon-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+        url = "https://patrickjodon-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
         # Concat all dealer's short name
@@ -81,7 +81,7 @@ def get_dealerships(request):
 
 def get_dealer_details(request, dealerId):
     if request.method == "GET":
-        url = "https://patrickjodon-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews"
+        url = "https://patrickjodon-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews"
         #Getting reivews from the url and dealerid
         reviews = get_dealer_reviews_from_cf(url, dealerId)
         #Concat reviews
@@ -89,9 +89,30 @@ def get_dealer_details(request, dealerId):
         #Returning List
         return HttpResponse(dealer_reviews)
 
-
-
-# Create a `add_review` view to submit a review
-# def add_review(request, dealer_id):
-# ...
-
+def add_review(request, dealer_id):
+    #Checking if user is authenticated
+    if request.user.is_authenticated:
+        print('authenticated')
+        #request url
+        url = "https://patrickjodon-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/post_review"
+        #Populating review dict
+        review = {}
+        review["id"] = 123
+        review["time"] = datetime.utcnow().isoformat()
+        review["name"] = "Patrick ODonnell"
+        review["dealership"] = dealer_id
+        review["review"] = "Bad Cars!"
+        review["purchase"] = True
+        review["purchase_date"] = "1/1/2024"
+        review["car_make"] = "Jeep"
+        review["car_model"] = "SUV"
+        review["car_year"] = 2024
+        #Creating payload
+        json_payload = {}
+        json_payload["review"] = review
+        #sending review
+        response = post_request(url, json_payload, dealerId=dealer_id)
+        review_response = response
+        return HttpResponse(review_response)
+    else:
+        return HttpResponse('not authenticated')
