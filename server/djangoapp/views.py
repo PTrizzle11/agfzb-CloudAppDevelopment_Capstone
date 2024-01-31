@@ -71,23 +71,25 @@ def registration_request(request):
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
     if request.method == "GET":
+        context={}
         url = "https://patrickjodon-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
-        # Concat all dealer's short name
-        dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
-        # Return a list of dealer short name
-        return HttpResponse(dealer_names)
+        # Add to context
+        context["dealerships"] = dealerships
+        # rendering page
+        return render(request, 'djangoapp/index.html', context)
 
 def get_dealer_details(request, dealerId):
     if request.method == "GET":
+        context={}
         url = "https://patrickjodon-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews"
         #Getting reivews from the url and dealerid
         reviews = get_dealer_reviews_from_cf(url, dealerId)
-        #Concat reviews
-        dealer_reviews = ' '.join([dealer.review + ":" + dealer.sentiment for dealer in reviews])
-        #Returning List
-        return HttpResponse(dealer_reviews)
+        #add reviews to context
+        context["reviews"] = reviews
+        #Returning render
+        return render(request, 'djangoapp/dealer_details.html', context)
 
 def add_review(request, dealer_id):
     #Checking if user is authenticated

@@ -70,3 +70,9 @@
     width: 95%;
     height: 50px;
 }
+
+.index-heading{
+    display:flex;
+    justify-content: center;
+    align-content: center;
+}
