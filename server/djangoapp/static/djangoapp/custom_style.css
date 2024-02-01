@@ -76,3 +76,14 @@
     justify-content: center;
     align-content: center;
 }
+
+.review_light{
+    color: gray;
+}
+
+.review_form{
+    margin: 2.5%;
+    padding: 2.5%;
+    background-color: lightgray;
+    border-radius: 5%;
+}

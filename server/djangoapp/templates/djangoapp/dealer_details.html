@@ -34,7 +34,7 @@
                     <ul class="navbar-nav ml-auto">
                         {% if user.is_authenticated %}
                         <li>
-                            <a class="btn btn-link" href="{% url 'djangoapp:add_review' %}">Add Review</a>
+                            <a class="btn btn-link" href="{% url 'djangoapp:add_review' dealer_id%}">Add Review</a>
                             <a class="btn btn-link" href="#">{{user.username}}</a>
                             <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
                         </li>
@@ -57,7 +57,7 @@
         </div>
     </nav>
     <!-- Add reviews as cards -->
-    {% for review in review %}
+    {% for review in reviews %}
     <div class="card">
         
     </div>
