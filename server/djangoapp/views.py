@@ -112,22 +112,26 @@ def add_review(request, dealer_id):
         elif request.method == "POST":
             url = "https://patrickjodon-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/post_review"
             review = {}
-            review["id"] = 123
+            review["id"] = 123 #need
             review["time"] = datetime.utcnow().isoformat()
-            review["name"] = "Patrick ODonnell"
+            review["name"] = request.user.first_name + " " + request.user.last_name
             review["dealership"] = dealer_id
-            review["review"] = "Bad Cars!"
-            review["purchase"] = True
-            review["purchase_date"] = "1/1/2024"
-            review["car_make"] = "Jeep"
-            review["car_model"] = "SUV"
-            review["car_year"] = 2024
+            review["review"] = request.POST['content']
+            if request.POST['purchasecheck'] == 'on':
+                review["purchase"] = True
+            else:
+                review["purchase"] = False
+            review["purchase_date"] = request.POST['purchasedate']
+            print(CarModel.objects.get(pk=request.POST["car"]))
+            review["car_make"] = "Jeep" #need
+            review["car_model"] = "SUV" #need
+            review["car_year"] = 2024 #need
             #Creating payload
             json_payload = {}
             json_payload["review"] = review
             #sending review
-            response = post_request(url, json_payload, dealerId=dealer_id)
-            review_response = response
-            return HttpResponse(review_response)
+            #response = post_request(url, json_payload, dealerId=dealer_id)
+            #review_response = response
+            #return HttpResponse(review_response)
     else:
         return HttpResponse('not authenticated')
