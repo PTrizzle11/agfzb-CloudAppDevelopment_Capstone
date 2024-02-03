@@ -88,12 +88,15 @@ def get_dealer_details(request, dealerId):
         reviews = get_dealer_reviews_from_cf(url, dealerId)
         #add reviews to context
         context["reviews"] = reviews
-        max_id = 0
-        for review in reviews:
-            if review.id > max_id:
-                max_id = review.id
-        context["max_id"] = max_id #have this here
         context["dealer_id"] = dealerId
+        #Getting dealer name
+        dealer_name = ""
+        dealers_url = "https://patrickjodon-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+        dealerships = get_dealers_from_cf(dealers_url)
+        for dealer in dealerships:
+            if dealer.id == dealerId:
+                dealer_name = dealer.full_name
+        context["dealer_name"] = dealer_name
         #Returning render
         return render(request, 'djangoapp/dealer_details.html', context)
 
@@ -117,8 +120,15 @@ def add_review(request, dealer_id):
         elif request.method == "POST":
             url = "https://patrickjodon-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/post_review"
             review = {}
-            print(request.POST[''])
-            review["id"] = 124 #need to get here
+            #Getting reviews for id
+            reviews_url = "https://patrickjodon-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews"
+            reviews = get_dealer_reviews_from_cf(reviews_url, dealer_id)
+            #Getting max id
+            max_id = 0
+            for reviewed in reviews:
+                if reviewed.id > max_id:
+                    max_id = reviewed.id
+            review["id"] = max_id + 1
             review["time"] = datetime.utcnow().isoformat()
             review["name"] = request.user.first_name + " " + request.user.last_name
             review["dealership"] = dealer_id
@@ -137,6 +147,6 @@ def add_review(request, dealer_id):
             json_payload["review"] = review
             #sending review
             response = post_request(url, json_payload, dealerId=dealer_id)
-            return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
+            return redirect("djangoapp:dealer_details", dealerId=dealer_id)
     else:
         return HttpResponse('not authenticated')
