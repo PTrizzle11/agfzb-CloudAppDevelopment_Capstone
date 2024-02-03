@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import CarMake, CarModel
+from .models import CarMake, CarModel, DealerReview
 from .restapis import get_request, get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -88,6 +88,11 @@ def get_dealer_details(request, dealerId):
         reviews = get_dealer_reviews_from_cf(url, dealerId)
         #add reviews to context
         context["reviews"] = reviews
+        max_id = 0
+        for review in reviews:
+            if review.id > max_id:
+                max_id = review.id
+        context["max_id"] = max_id #have this here
         context["dealer_id"] = dealerId
         #Returning render
         return render(request, 'djangoapp/dealer_details.html', context)
@@ -112,26 +117,26 @@ def add_review(request, dealer_id):
         elif request.method == "POST":
             url = "https://patrickjodon-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/post_review"
             review = {}
-            review["id"] = 123 #need
+            print(request.POST[''])
+            review["id"] = 124 #need to get here
             review["time"] = datetime.utcnow().isoformat()
             review["name"] = request.user.first_name + " " + request.user.last_name
             review["dealership"] = dealer_id
             review["review"] = request.POST['content']
-            if request.POST['purchasecheck'] == 'on':
+            try:
                 review["purchase"] = True
-            else:
+            except:
                 review["purchase"] = False
             review["purchase_date"] = request.POST['purchasedate']
-            print(CarModel.objects.get(pk=request.POST["car"]))
-            review["car_make"] = "Jeep" #need
-            review["car_model"] = "SUV" #need
-            review["car_year"] = 2024 #need
+            vehicle = CarModel.objects.get(pk=request.POST["car"])
+            review["car_make"] = vehicle.carmake.name
+            review["car_model"] = vehicle.name
+            review["car_year"] = vehicle.year.strftime("%Y")
             #Creating payload
             json_payload = {}
             json_payload["review"] = review
             #sending review
-            #response = post_request(url, json_payload, dealerId=dealer_id)
-            #review_response = response
-            #return HttpResponse(review_response)
+            response = post_request(url, json_payload, dealerId=dealer_id)
+            return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
     else:
         return HttpResponse('not authenticated')
