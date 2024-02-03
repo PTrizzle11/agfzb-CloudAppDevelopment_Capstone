@@ -87,3 +87,11 @@
     background-color: lightgray;
     border-radius: 5%;
 }
+
+.reviews-card{
+    padding: 5%;
+}
+
+.reviews-img{
+    width: 15%;
+}
